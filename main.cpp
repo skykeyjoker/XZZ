@@ -7,7 +7,7 @@
 #include "mnerquery.h"
 #include "setuinfo.h"
 #include "setuquery.h"
-
+#include "whitelist.h"
 
 bool setu = false;
 
@@ -18,8 +18,8 @@ int main(int argc, char *argv[])
 
     QCoreApplication a(argc, argv);
 
-    MiraiBot bot("39.97.253.64",9090); //初始化一个机器人
-    //MiraiBot bot("127.0.0.01",9090);
+    //MiraiBot bot("39.97.253.64",9090); //初始化一个机器人
+    MiraiBot bot("127.0.0.01",9090);
     QQ_t botqq = QQ_t(3625434216);
 
     while(true)
@@ -55,15 +55,15 @@ int main(int argc, char *argv[])
                 // 生成消息体
                 QString messageBody;
                 messageBody.append("咱现在支持以下命令：\n");
-                messageBody.append("/ping\t检查机器人是否在线\n");
-                messageBody.append("/pkg xxx\t查询包xxx\n");
-                messageBody.append("/off xxx\t在官方仓库中查询包xxx\n");
-                messageBody.append("/aur xxx\t在AUR中查询包xxx\n");
-                messageBody.append("/mner xxx\t查询打包人信息xxx\n");
-                messageBody.append("/enable lsp\t开启色图机器人\n");
-                messageBody.append("/disable lsp\t关闭色图机器人\n");
-                messageBody.append("/lsp \t我要一份色图！\n");
-                messageBody.append("/lsp xxx\t我要一份xxx的色图！");
+                messageBody.append("/ping    检查机器人是否在线\n");
+                messageBody.append("/pkg xxx    查询包xxx\n");
+                messageBody.append("/off xxx    在官方仓库中查询包xxx\n");
+                messageBody.append("/aur xxx   在AUR中查询包xxx\n");
+                messageBody.append("/mner xxx    查询打包人信息xxx\n");
+                messageBody.append("/enable lsp    开启色图机器人\n");
+                messageBody.append("/disable lsp    关闭色图机器人\n");
+                messageBody.append("/lsp     我要一份色图！\n");
+                messageBody.append("/lsp xxx    我要一份xxx的色图！");
 
                 // 发送消息
                 m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -97,12 +97,14 @@ int main(int argc, char *argv[])
                     {
                         // 生成消息体
                         QString messageBody;
-                        messageBody = "PkgName:\t" + ret.pkgname
-                                + "\nPkgVer:\t" + ret.pkgver
-                                + "\nPkgDesc:\t" + ret.pkgdesc
-                                + "\nMaintainers:\t" + ret.maintainers
-                                + "\nLast_update:\t" + ret.last_update
-                                + "\nUrl:\t" + ret.url;
+                        messageBody.append("仓库    :官方");
+                        messageBody.append("\n包名    :" + ret.pkgname);
+                        messageBody.append("\n版本    :" + ret.pkgver);
+                        messageBody.append("\n描述    :" + ret.pkgdesc);
+                        messageBody.append("\n维护    :" + ret.maintainers);
+                        messageBody.append("\n更新    :" + ret.last_update);
+                        messageBody.append("\n网址    :" + ret.url);
+
                         // 发送消息
                         m.Reply(MessageChain().Plain(messageBody.toStdString()));
                     }
@@ -110,13 +112,18 @@ int main(int argc, char *argv[])
                     {
                         // 生成消息体
                         QString messageBody;
-                        messageBody = "PkgName:\t" + ret.pkgname
-                                + "\nPkgVer:\t" + ret.pkgver
-                                + "\nPkgDesc:\t" + ret.pkgdesc
-                                + "\nMaintainer:\t" + ret.maintainers
-                                + "\nNumVotes:\t" + QString::number(ret.numvotes)
-                                + "\nOutOfDate:\t" + ret.outofdate
-                                + "\nUrl:\t" + ret.url;
+                        messageBody.append("仓库    :AUR");
+                        messageBody.append("\n包名    :" + ret.pkgname);
+                        messageBody.append("\n版本    :" + ret.pkgver);
+                        messageBody.append("\n描述    :" + ret.pkgdesc);
+                        messageBody.append("\n维护    :" + ret.maintainers);
+                        messageBody.append("\n投票    :" + QString::number(ret.numvotes));
+                        if(ret.outofdate.isEmpty())
+                            messageBody.append("\n过期    :未过期");
+                        else
+                            messageBody.append("\n过期    :" + ret.outofdate);
+                        messageBody.append("\n地址    :" + ret.url);
+
                         // 发送消息
                         m.Reply(MessageChain().Plain(messageBody.toStdString()));
                     }
@@ -142,13 +149,18 @@ int main(int argc, char *argv[])
 
                     // 生成消息体
                     QString messageBody;
-                    messageBody = "PkgName:\t" + ret.pkgname
-                            + "\nPkgVer:\t" + ret.pkgver
-                            + "\nPkgDesc:\t" + ret.pkgdesc
-                            + "\nMaintainer:\t" + ret.maintainers
-                            + "\nNumVotes:\t" + QString::number(ret.numvotes)
-                            + "\nOutOfDate:\t" + ret.outofdate
-                            + "\nUrl:\t" + ret.url;
+                    messageBody.append("仓库    :AUR");
+                    messageBody.append("\n包名    :" + ret.pkgname);
+                    messageBody.append("\n版本    :" + ret.pkgver);
+                    messageBody.append("\n描述    :" + ret.pkgdesc);
+                    messageBody.append("\n维护    :" + ret.maintainers);
+                    messageBody.append("\n投票    :" + QString::number(ret.numvotes));
+                    if(ret.outofdate.isEmpty())
+                        messageBody.append("\n过期    :未过期");
+                    else
+                        messageBody.append("\n过期    :" + ret.outofdate);
+                    messageBody.append("\n地址    :" + ret.url);
+
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
                 }
@@ -172,12 +184,14 @@ int main(int argc, char *argv[])
                 {
                     // 生成消息体
                     QString messageBody;
-                    messageBody = "PkgName:\t" + ret.pkgname
-                            + "\nPkgVer:\t" + ret.pkgver
-                            + "\nPkgDesc:\t" + ret.pkgdesc
-                            + "\nMaintainers:\t" + ret.maintainers
-                            + "\nLast_update:\t" + ret.last_update
-                            + "\nUrl:\t" + ret.url;
+                    messageBody.append("仓库    :官方");
+                    messageBody.append("\n包名    :" + ret.pkgname);
+                    messageBody.append("\n版本    :" + ret.pkgver);
+                    messageBody.append("\n描述    :" + ret.pkgdesc);
+                    messageBody.append("\n维护    :" + ret.maintainers);
+                    messageBody.append("\n更新    :" + ret.last_update);
+                    messageBody.append("\n网址    :" + ret.url);
+
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
 
@@ -224,7 +238,22 @@ int main(int argc, char *argv[])
                 // 这句咱也不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
-                setu = true;
+                if(WhiteList.contains(m.Sender.Group.GID.ToInt64()))
+                {
+                    if(!setu)
+                    {
+                        setu = true;
+                        m.Reply(MessageChain().Plain("上车！"));
+                    }
+                    else
+                    {
+                        m.Reply(MessageChain().Plain("咦，你不是已经在车上了吗？"));
+                    }
+                }
+                else
+                {
+                    m.Reply(MessageChain().Plain("想什么呢！你可不是我的猪头少年！"));
+                }
 
                 return;
             }
@@ -235,7 +264,20 @@ int main(int argc, char *argv[])
                 // 这句咱也不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
-                setu = false;
+                if(WhiteList.contains(m.Sender.Group.GID.ToInt64()))
+                {
+                    if(setu)
+                    {
+                        setu = false;
+                        m.Reply(MessageChain().Plain("下车！"));
+                    }
+                    else
+                        m.Reply(MessageChain().Plain("不是吧啊Sir,还在催啊，人家早就下车了！"));
+                }
+                else
+                {
+                    m.Reply(MessageChain().Plain("想什么呢！你可不是我的猪头少年！"));
+                }
 
                 return;
             }
@@ -265,10 +307,19 @@ int main(int argc, char *argv[])
                         return;
                     }
 
-                    GroupImage img = bot.UploadGroupImage(ret.url.toStdString());
+                    qDebug()<<ret.url;
+
+                    QString imgPath = "pics/" + ret.url;
+                    qDebug()<<ret.url<<" "<<imgPath;
+                    GroupImage img = bot.UploadGroupImage(imgPath.toStdString());
+                    //GroupImage img = bot.UploadGroupImage("http://i.pixiv.cat/img-original/img/2019/11/10/13/16/49/77742218_p0.png");
                     m.Reply(MessageChain().Plain("咱帮你🔍找到了这个\n").Image(img));
 
                     return;
+                }
+                else
+                {
+                    m.Reply(MessageChain().Plain("LSP被抓起来啦！"));
                 }
 
                 return;
