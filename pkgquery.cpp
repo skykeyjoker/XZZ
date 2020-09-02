@@ -73,6 +73,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         QString pkgver = pkgObj.value("pkgver").toString() + "-" + pkgObj.value("pkgrel").toString();
         QString url = pkgObj.value("url").toString();
         QString last_update = pkgObj.value("last_update").toString();
+        QString repo = pkgObj.value("repo").toString();
         QString maintainers;
         QJsonValue maintainersValue = pkgObj.value("maintainers");
         if(maintainersValue.isArray())
@@ -87,6 +88,11 @@ PkgInfo PkgQuery::queryPkgInOfficial()
             }
         }
 
+
+        // LastUpdate时间格式转换
+        QDateTime dateTime = QDateTime::fromString(last_update, "yyyy-MM-ddThh:mm:ss.zzzZ");
+        last_update = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+
         // 赋值
         _info.pkgname = pkgname;
         _info.pkgdesc = pkgdesc;
@@ -95,6 +101,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         _info.last_update = last_update;
         _info.maintainers = maintainers;
         _info.isAUR = false;
+        _info.repo = repo;
     }
 
     return _info;
@@ -146,18 +153,28 @@ PkgInfo PkgQuery::queryPkgInAUR()
         QString pkgdesc = pkgObj.value("Description").toString();
         QString pkgver = pkgObj.value("Version").toString();
         QString url = pkgObj.value("URL").toString();
-        QString outofdate = pkgObj.value("OutOfDate").toString();
+
+        // outofdate 以时间戳形式，需要特殊处理
+        QString outofdate;
+        int outofdateInt = pkgObj.value("OutOfDate").toInt();
+        //qDebug()<<"outofdateInt:"<<outofdateInt;
+        QDateTime dateTime = QDateTime::fromSecsSinceEpoch(outofdateInt);
+        outofdate = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+
         QString maintainers = pkgObj.value("Maintainer").toString();
         int numvotes = pkgObj.value("NumVotes").toInt();
+        QString urlPath = pkgObj.value("URLPath").toString();
 
         // 赋值
         _info.pkgname = pkgname;
         _info.pkgdesc = pkgdesc;
         _info.pkgver = pkgver;
+        _info.outofdate = outofdate;
         _info.url = url;
         _info.maintainers = maintainers;
         _info.numvotes = numvotes;
         _info.isAUR = true;
+        _info.urlPath = urlPathPrefix + urlPath;
     }
 
     return _info;

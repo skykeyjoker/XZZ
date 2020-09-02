@@ -16,6 +16,8 @@
 
 #include <QEventLoop>
 
+#include <QDateTime>
+
 #include <QDebug>
 
 #include "pkginfo.h"
@@ -32,7 +34,7 @@ public:
 
 private:
 
-
+    const QString urlPathPrefix = "https://aur.archlinux.org";
     QString _pkgname;
     QNetworkAccessManager manager;
 signals:

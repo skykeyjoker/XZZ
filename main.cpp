@@ -97,13 +97,13 @@ int main(int argc, char *argv[])
                     {
                         // 生成消息体
                         QString messageBody;
-                        messageBody.append("仓库    :官方");
-                        messageBody.append("\n包名    :" + ret.pkgname);
-                        messageBody.append("\n版本    :" + ret.pkgver);
-                        messageBody.append("\n描述    :" + ret.pkgdesc);
-                        messageBody.append("\n维护    :" + ret.maintainers);
-                        messageBody.append("\n更新    :" + ret.last_update);
-                        messageBody.append("\n网址    :" + ret.url);
+                        messageBody.append("仓库    : 官方 [" + ret.repo + "]");
+                        messageBody.append("\n包名    : " + ret.pkgname);
+                        messageBody.append("\n版本    : " + ret.pkgver);
+                        messageBody.append("\n描述    : " + ret.pkgdesc);
+                        messageBody.append("\n维护    : " + ret.maintainers);
+                        messageBody.append("\n更新    : " + ret.last_update);
+                        messageBody.append("\n网址    : " + ret.url);
 
                         // 发送消息
                         m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -112,17 +112,18 @@ int main(int argc, char *argv[])
                     {
                         // 生成消息体
                         QString messageBody;
-                        messageBody.append("仓库    :AUR");
-                        messageBody.append("\n包名    :" + ret.pkgname);
-                        messageBody.append("\n版本    :" + ret.pkgver);
-                        messageBody.append("\n描述    :" + ret.pkgdesc);
-                        messageBody.append("\n维护    :" + ret.maintainers);
-                        messageBody.append("\n投票    :" + QString::number(ret.numvotes));
+                        messageBody.append("仓库    : AUR");
+                        messageBody.append("\n包名    : " + ret.pkgname);
+                        messageBody.append("\n版本    : " + ret.pkgver);
+                        messageBody.append("\n描述    : " + ret.pkgdesc);
+                        messageBody.append("\n维护    : " + ret.maintainers);
+                        messageBody.append("\n投票    : " + QString::number(ret.numvotes));
                         if(ret.outofdate.isEmpty())
-                            messageBody.append("\n过期    :未过期");
+                            messageBody.append("\n过期    : 未过期");
                         else
-                            messageBody.append("\n过期    :" + ret.outofdate);
-                        messageBody.append("\n地址    :" + ret.url);
+                            messageBody.append("\n过期    : " + ret.outofdate);
+                        messageBody.append("\n地址    : " + ret.url);
+                        messageBody.append("\n链接    : " + ret.urlPath);
 
                         // 发送消息
                         m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -149,17 +150,18 @@ int main(int argc, char *argv[])
 
                     // 生成消息体
                     QString messageBody;
-                    messageBody.append("仓库    :AUR");
-                    messageBody.append("\n包名    :" + ret.pkgname);
-                    messageBody.append("\n版本    :" + ret.pkgver);
-                    messageBody.append("\n描述    :" + ret.pkgdesc);
-                    messageBody.append("\n维护    :" + ret.maintainers);
-                    messageBody.append("\n投票    :" + QString::number(ret.numvotes));
+                    messageBody.append("仓库    : AUR");
+                    messageBody.append("\n包名    : " + ret.pkgname);
+                    messageBody.append("\n版本    : " + ret.pkgver);
+                    messageBody.append("\n描述    : " + ret.pkgdesc);
+                    messageBody.append("\n维护    : " + ret.maintainers);
+                    messageBody.append("\n投票    : " + QString::number(ret.numvotes));
                     if(ret.outofdate.isEmpty())
-                        messageBody.append("\n过期    :未过期");
+                        messageBody.append("\n过期    : 未过期");
                     else
-                        messageBody.append("\n过期    :" + ret.outofdate);
-                    messageBody.append("\n地址    :" + ret.url);
+                        messageBody.append("\n过期    : " + ret.outofdate);
+                    messageBody.append("\n地址    : " + ret.url);
+                    messageBody.append("\n链接    : " + ret.urlPath);
 
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -184,13 +186,13 @@ int main(int argc, char *argv[])
                 {
                     // 生成消息体
                     QString messageBody;
-                    messageBody.append("仓库    :官方");
-                    messageBody.append("\n包名    :" + ret.pkgname);
-                    messageBody.append("\n版本    :" + ret.pkgver);
-                    messageBody.append("\n描述    :" + ret.pkgdesc);
-                    messageBody.append("\n维护    :" + ret.maintainers);
-                    messageBody.append("\n更新    :" + ret.last_update);
-                    messageBody.append("\n网址    :" + ret.url);
+                    messageBody.append("仓库    : 官方 [" + ret.repo + "]");
+                    messageBody.append("\n包名    : " + ret.pkgname);
+                    messageBody.append("\n版本    : " + ret.pkgver);
+                    messageBody.append("\n描述    : " + ret.pkgdesc);
+                    messageBody.append("\n维护    : " + ret.maintainers);
+                    messageBody.append("\n更新    : " + ret.last_update);
+                    messageBody.append("\n网址    : " + ret.url);
 
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -308,6 +310,10 @@ int main(int argc, char *argv[])
                     }
 
                     qDebug()<<ret.url;
+
+                    //MiraiImage miraiImage;
+                    //miraiImage.Url = ret.url.toStdString();
+                    //bot.SendMessage(m.Sender.Group.GID, MessageChain().Plain("咱帮你🔍找到了这个\n").Image(miraiImage));
 
                     QString imgPath = "pics/" + ret.url;
                     qDebug()<<ret.url<<" "<<imgPath;
