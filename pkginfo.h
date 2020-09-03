@@ -11,6 +11,8 @@ typedef struct pkginfo{
     QString maintainers = "";
     QString last_update = "";
     QString outofdate = "";
+    QString flag_date = "";
+    QString lastModified = "";
     QString urlPath = "";
     QString repo = "";
     int numvotes = 0;

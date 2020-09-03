@@ -73,6 +73,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         QString pkgver = pkgObj.value("pkgver").toString() + "-" + pkgObj.value("pkgrel").toString();
         QString url = pkgObj.value("url").toString();
         QString last_update = pkgObj.value("last_update").toString();
+        QString flag_date = pkgObj.value("flag_date").toString();
         QString repo = pkgObj.value("repo").toString();
         QString maintainers;
         QJsonValue maintainersValue = pkgObj.value("maintainers");
@@ -90,9 +91,12 @@ PkgInfo PkgQuery::queryPkgInOfficial()
 
 
         // LastUpdate时间格式转换
-
         QDateTime dateTime = QDateTime::fromString(last_update, "yyyy-MM-ddThh:mm:ss.zzzZ");
         last_update = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+
+        // flag_date时间格式转换
+        dateTime = QDateTime::fromString(flag_date, "yyyy-MM-ddThh:mm:ss.zzzZ");
+        flag_date = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
 
         // 赋值
         _info.pkgname = pkgname;
@@ -100,6 +104,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         _info.pkgver = pkgver;
         _info.url = url;
         _info.last_update = last_update;
+        _info.flag_date = flag_date;
         _info.maintainers = maintainers;
         _info.isAUR = false;
         _info.repo = repo;
@@ -165,6 +170,15 @@ PkgInfo PkgQuery::queryPkgInAUR()
             outofdate = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
         }
 
+        // lastModified 以时间戳形式，需要特殊处理
+        QString lastModified;
+        int lastModifiedInt = pkgObj.value("LastModified").toInt();
+        if(lastModifiedInt != 0)
+        {
+            QDateTime dateTime = QDateTime::fromSecsSinceEpoch(lastModifiedInt);
+            lastModified = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+        }
+
         QString maintainers = pkgObj.value("Maintainer").toString();
         int numvotes = pkgObj.value("NumVotes").toInt();
         QString urlPath = pkgObj.value("URLPath").toString();
@@ -174,6 +188,7 @@ PkgInfo PkgQuery::queryPkgInAUR()
         _info.pkgdesc = pkgdesc;
         _info.pkgver = pkgver;
         _info.outofdate = outofdate;
+        _info.lastModified =lastModified;
         _info.url = url;
         _info.maintainers = maintainers;
         _info.numvotes = numvotes;

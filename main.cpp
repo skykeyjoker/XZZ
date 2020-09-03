@@ -103,6 +103,10 @@ int main(int argc, char *argv[])
                         messageBody.append("\n描述    : " + ret.pkgdesc);
                         messageBody.append("\n维护    : " + ret.maintainers);
                         messageBody.append("\n更新    : " + ret.last_update);
+                        if(ret.flag_date.isEmpty())
+                            messageBody.append("\n过期    : 未过期");
+                        else
+                            messageBody.append("\n过期    : " + ret.flag_date);
                         messageBody.append("\n网址    : " + ret.url);
 
                         // 发送消息
@@ -118,6 +122,7 @@ int main(int argc, char *argv[])
                         messageBody.append("\n描述    : " + ret.pkgdesc);
                         messageBody.append("\n维护    : " + ret.maintainers);
                         messageBody.append("\n投票    : " + QString::number(ret.numvotes));
+                        messageBody.append("\n更新    : " + ret.lastModified);
                         if(ret.outofdate.isEmpty())
                             messageBody.append("\n过期    : 未过期");
                         else
@@ -156,6 +161,7 @@ int main(int argc, char *argv[])
                     messageBody.append("\n描述    : " + ret.pkgdesc);
                     messageBody.append("\n维护    : " + ret.maintainers);
                     messageBody.append("\n投票    : " + QString::number(ret.numvotes));
+                    messageBody.append("\n更新    : " + ret.lastModified);
                     if(ret.outofdate.isEmpty())
                         messageBody.append("\n过期    : 未过期");
                     else
@@ -192,6 +198,10 @@ int main(int argc, char *argv[])
                     messageBody.append("\n描述    : " + ret.pkgdesc);
                     messageBody.append("\n维护    : " + ret.maintainers);
                     messageBody.append("\n更新    : " + ret.last_update);
+                    if(ret.flag_date.isEmpty())
+                        messageBody.append("\n过期    : 未过期");
+                    else
+                        messageBody.append("\n过期    : " + ret.flag_date);
                     messageBody.append("\n网址    : " + ret.url);
 
                     // 发送消息
