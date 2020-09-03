@@ -90,6 +90,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
 
 
         // LastUpdate时间格式转换
+
         QDateTime dateTime = QDateTime::fromString(last_update, "yyyy-MM-ddThh:mm:ss.zzzZ");
         last_update = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
 
@@ -157,9 +158,12 @@ PkgInfo PkgQuery::queryPkgInAUR()
         // outofdate 以时间戳形式，需要特殊处理
         QString outofdate;
         int outofdateInt = pkgObj.value("OutOfDate").toInt();
-        //qDebug()<<"outofdateInt:"<<outofdateInt;
-        QDateTime dateTime = QDateTime::fromSecsSinceEpoch(outofdateInt);
-        outofdate = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+        if(outofdateInt != 0)
+        {
+            //qDebug()<<"outofdateInt:"<<outofdateInt;
+            QDateTime dateTime = QDateTime::fromSecsSinceEpoch(outofdateInt);
+            outofdate = dateTime.toString("yyyy年MM月dd日 hh:mm:ss");
+        }
 
         QString maintainers = pkgObj.value("Maintainer").toString();
         int numvotes = pkgObj.value("NumVotes").toInt();
@@ -174,7 +178,7 @@ PkgInfo PkgQuery::queryPkgInAUR()
         _info.maintainers = maintainers;
         _info.numvotes = numvotes;
         _info.isAUR = true;
-        _info.urlPath = urlPathPrefix + urlPath;
+        _info.urlPath = aurPrefix + pkgname;
     }
 
     return _info;

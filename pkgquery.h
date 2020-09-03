@@ -35,6 +35,7 @@ public:
 private:
 
     const QString urlPathPrefix = "https://aur.archlinux.org";
+    const QString aurPrefix = "https://aur.archlinux.org/packages/";
     QString _pkgname;
     QNetworkAccessManager manager;
 signals:
