@@ -122,7 +122,8 @@ PkgInfo PkgQuery::queryPkgInAUR()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&arg=" + _pkgname));
+    //request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&arg=" + _pkgname));
+    request.setUrl(QUrl(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=" + _pkgname));  // Tuna反代
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
@@ -193,7 +194,8 @@ PkgInfo PkgQuery::queryPkgInAUR()
         _info.maintainers = maintainers;
         _info.numvotes = numvotes;
         _info.isAUR = true;
-        _info.urlPath = aurPrefix + pkgname;
+        //_info.urlPath = aurPrefix + pkgname;
+        _info.urlPath = aurPrefix_tuna + "/packages/" + pkgname;
     }
 
     return _info;
