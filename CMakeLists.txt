@@ -31,6 +31,8 @@ add_executable(MiraiDemo
   setuquery.cpp
   cnpkgquery.h
   cnpkgquery.cpp
+  wikiquery.h
+  wikiquery.cpp
   whitelist.h
 )
 

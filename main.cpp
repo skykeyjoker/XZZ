@@ -8,6 +8,7 @@
 #include "mnerquery.h"
 #include "setuinfo.h"
 #include "setuquery.h"
+#include "wikiquery.h"
 #include "whitelist.h"
 
 bool setu = false;
@@ -57,15 +58,16 @@ int main(int argc, char *argv[])
                 QString messageBody;
                 messageBody.append("咱现在支持以下命令：\n");
                 messageBody.append("ping\n");
-                messageBody.append("pkg xxx\n");
-                messageBody.append("off xxx\n");
-                messageBody.append("aur xxx\n");
-                messageBody.append("cnpkg xxx\n");
-                messageBody.append("mner xxx\n");
+                messageBody.append("pkg  ${pkgName}\n");
+                messageBody.append("off  ${pkgName}\n");
+                messageBody.append("aur  ${pkgName}\n");
+                messageBody.append("cnpkg $ {pkgName}\n");
+                messageBody.append("mner  ${mnerName}\n");
+                //messageBody.append("wiki  ${keyWord}\n");
                 messageBody.append("enable lsp\n");
                 messageBody.append("disable lsp\n");
                 messageBody.append("lsp\n");
-                messageBody.append("lsp xxx");
+                messageBody.append("lsp  ${keyWord}");
 
                 // 发送消息
                 m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -368,6 +370,33 @@ int main(int argc, char *argv[])
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
 
+                }
+
+                return;
+            }
+
+            // Wiki
+            if(qplain.contains("/wiki") || qplain.contains("!wiki"))
+            {
+                // 这句话不知道是干啥的
+                groups[m.Sender.Group.GID] = true;
+
+                // 查询Wiki
+                QString keyword = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  // 获取关键词
+                qDebug()<<"keyword: "<<keyword;
+                WikiQuery *query = new WikiQuery(keyword);
+                QString ret = query->queryWiki();
+
+                if(!ret.isEmpty())  // 有相关界面
+                {
+                    // 发送消息
+                    m.Reply(MessageChain().Plain(ret.toStdString()));
+                }
+                else  //若没有界面
+                {
+                    // 发送消息
+                    QString url = "https://wiki.archlinux.org/index.php?search=" + keyword; // 构造网址
+                    m.Reply(MessageChain().Plain(url.toStdString()));
                 }
 
                 return;
