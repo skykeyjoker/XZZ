@@ -29,6 +29,8 @@ add_executable(MiraiDemo
   setuinfo.h
   setuquery.h
   setuquery.cpp
+  cnpkgquery.h
+  cnpkgquery.cpp
   whitelist.h
 )
 

@@ -3,6 +3,7 @@
 
 #include "pkginfo.h"
 #include "pkgquery.h"
+#include "cnpkgquery.h"
 #include "mnerinfo.h"
 #include "mnerquery.h"
 #include "setuinfo.h"
@@ -55,15 +56,16 @@ int main(int argc, char *argv[])
                 // 生成消息体
                 QString messageBody;
                 messageBody.append("咱现在支持以下命令：\n");
-                messageBody.append("/ping    检查机器人是否在线\n");
-                messageBody.append("/pkg xxx    查询包xxx\n");
-                messageBody.append("/off xxx    在官方仓库中查询包xxx\n");
-                messageBody.append("/aur xxx   在AUR中查询包xxx\n");
-                messageBody.append("/mner xxx    查询打包人信息xxx\n");
-                messageBody.append("/enable lsp    开启色图机器人\n");
-                messageBody.append("/disable lsp    关闭色图机器人\n");
-                messageBody.append("/lsp     我要一份色图！\n");
-                messageBody.append("/lsp xxx    我要一份xxx的色图！");
+                messageBody.append("ping\n");
+                messageBody.append("pkg xxx\n");
+                messageBody.append("off xxx\n");
+                messageBody.append("aur xxx\n");
+                messageBody.append("cnpkg xxx\n");
+                messageBody.append("mner xxx\n");
+                messageBody.append("enable lsp\n");
+                messageBody.append("disable lsp\n");
+                messageBody.append("lsp\n");
+                messageBody.append("lsp xxx");
 
                 // 发送消息
                 m.Reply(MessageChain().Plain(messageBody.toStdString()));
@@ -298,7 +300,7 @@ int main(int argc, char *argv[])
             if(qplain.contains("/lsp") || qplain.contains("!lsp"))
             {
                 // 开启色图开关才能获取色图
-                if(setu)
+                if(setu && WhiteList.contains(m.Sender.Group.GID))
                 {
                     // 关键字
                     QString keyword = qplain.section(" ",1,1);
@@ -336,6 +338,36 @@ int main(int argc, char *argv[])
                 else
                 {
                     m.Reply(MessageChain().Plain("LSP被抓起来啦！"));
+                }
+
+                return;
+            }
+
+
+            // cnpkg
+            if(qplain.contains("/cnpkg") || qplain.contains("!cnpkg"))
+            {
+                // 这句话不知道是干啥的
+                groups[m.Sender.Group.GID] = true;
+
+                // 查询包
+                QString pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  //获取包名
+                qDebug()<<"Pkgname: "<< pkgname;
+                CNPkgquery *query = new CNPkgquery(pkgname);
+                PkgInfo ret = query->queryPkg();
+
+                if(!ret.pkgname.isEmpty())
+                {
+                    // 生成消息体
+                    QString messageBody;
+                    messageBody.append("仓库    : ArchLinuxCN");
+                    messageBody.append("\n包名    : " + ret.pkgname);
+                    messageBody.append("\n版本    : " + ret.pkgver);
+                    messageBody.append("\n维护    : " + ret.maintainers);
+
+                    // 发送消息
+                    m.Reply(MessageChain().Plain(messageBody.toStdString()));
+
                 }
 
                 return;

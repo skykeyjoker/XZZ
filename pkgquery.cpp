@@ -1,7 +1,7 @@
 #include "pkgquery.h"
 
 PkgQuery::PkgQuery(const QString &pkgname, QObject *parent)
-    : _pkgname(pkgname), QObject(parent)
+    : QObject(parent), _pkgname(pkgname)
 {
 
 }
@@ -64,8 +64,19 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         // "results" Array
         QJsonArray resultsArr = document.object().value("results").toArray();
 
+        int x = 0; // 记录要取第几个值
+        for(int i = 0; i<resultsArr.count(); ++i)
+        {
+            if(resultsArr[i].toObject().value("pkgname").toString()  == _pkgname)
+            {
+                x = i;
+
+                break;
+            }
+        }
+
         // 仅获取第一个符合的包
-        QJsonObject pkgObj = resultsArr[0].toObject();
+        QJsonObject pkgObj = resultsArr[x].toObject();
 
         // 获取JSON值
         QString pkgname = pkgObj.value("pkgname").toString();
@@ -152,8 +163,20 @@ PkgInfo PkgQuery::queryPkgInAUR()
         // "results" Array
         QJsonArray resultsArr = document.object().value("results").toArray();
 
+        int x = 0; // 记录要取第几个值
+        for(int i = 0; i<resultsArr.count(); ++i)
+        {
+            if(resultsArr[i].toObject().value("Name").toString()  == _pkgname)
+            {
+                x = i;
+
+                break;
+            }
+        }
+
+        // 先循环一遍
         // 仅获取第一个符合的包
-        QJsonObject pkgObj = resultsArr[0].toObject();
+        QJsonObject pkgObj = resultsArr[x].toObject();
 
         // 获取JSON值
         QString pkgname = pkgObj.value("Name").toString();

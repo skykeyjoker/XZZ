@@ -17,9 +17,9 @@ SetuInfo SetuQuery::querySetu()
     QUrl url;
 
     if(_keyword.isEmpty())
-        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&" + "r18=0&num=1&size1200=true");  // 无关键词
+        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&" + "r18=1&num=1&size1200=true");  // 无关键词
     else
-        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&keyword=" + QUrl::toPercentEncoding(_keyword) + "&" + "r18=0&num=1&size1200=true");  // 含有关键词
+        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&keyword=" + QUrl::toPercentEncoding(_keyword) + "&" + "r18=1&num=1&size1200=true");  // 含有关键词
 
     request.setUrl(url);
 
