@@ -1,7 +1,7 @@
 #include "setuquery.h"
 
 SetuQuery::SetuQuery(const QString& keyword, QObject *parent)
-    : QObject(parent), _keyword(keyword)
+    : QObject(parent), m_keyword(keyword)
 {
 
 }
@@ -16,10 +16,10 @@ SetuInfo SetuQuery::querySetu()
     QNetworkRequest request;
     QUrl url;
 
-    if(_keyword.isEmpty())
+    if(m_keyword.isEmpty())
         url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&" + "r18=1&num=1&size1200=true");  // 无关键词
     else
-        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&keyword=" + QUrl::toPercentEncoding(_keyword) + "&" + "r18=1&num=1&size1200=true");  // 含有关键词
+        url.setUrl("https://api.lolicon.app/setu/?apikey=" + APIkey + "&keyword=" + QUrl::toPercentEncoding(m_keyword) + "&" + "r18=1&num=1&size1200=true");  // 含有关键词
 
     request.setUrl(url);
 

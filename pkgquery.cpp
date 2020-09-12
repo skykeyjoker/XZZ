@@ -1,7 +1,7 @@
 #include "pkgquery.h"
 
 PkgQuery::PkgQuery(const QString &pkgname, QObject *parent)
-    : QObject(parent), _pkgname(pkgname)
+    : QObject(parent), m_pkgname(pkgname)
 {
 
 }
@@ -11,7 +11,7 @@ PkgInfo PkgQuery::queryPkg()
 {
     PkgInfo _info;
 
-    if(_pkgname.isEmpty())
+    if(m_pkgname.isEmpty())
         return _info;
 
     qDebug()<<"start query";
@@ -39,7 +39,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://www.archlinux.org/packages/search/json/?name=" + _pkgname));
+    request.setUrl(QUrl("https://www.archlinux.org/packages/search/json/?name=" + m_pkgname));
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
@@ -67,7 +67,7 @@ PkgInfo PkgQuery::queryPkgInOfficial()
         int x = 0; // 记录要取第几个值
         for(int i = 0; i<resultsArr.count(); ++i)
         {
-            if(resultsArr[i].toObject().value("pkgname").toString()  == _pkgname)
+            if(resultsArr[i].toObject().value("pkgname").toString()  == m_pkgname)
             {
                 x = i;
 
@@ -134,7 +134,7 @@ PkgInfo PkgQuery::queryPkgInAUR()
 
     QNetworkRequest request;
     //request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&arg=" + _pkgname));
-    request.setUrl(QUrl(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=" + _pkgname));  // Tuna反代
+    request.setUrl(QUrl(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=" + m_pkgname));  // Tuna反代
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
@@ -166,7 +166,7 @@ PkgInfo PkgQuery::queryPkgInAUR()
         int x = 0; // 记录要取第几个值
         for(int i = 0; i<resultsArr.count(); ++i)
         {
-            if(resultsArr[i].toObject().value("Name").toString()  == _pkgname)
+            if(resultsArr[i].toObject().value("Name").toString()  == m_pkgname)
             {
                 x = i;
 

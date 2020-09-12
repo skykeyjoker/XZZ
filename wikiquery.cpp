@@ -1,7 +1,7 @@
 #include "wikiquery.h"
 
 WikiQuery::WikiQuery(const QString& keyword, QObject *parent)
-    : QObject(parent), _keyword(keyword)
+    : QObject(parent), m_keyword(keyword)
 {
 
 }
@@ -12,32 +12,33 @@ QString WikiQuery::queryWiki()
     QString url;
 
     // 调用QProcess获取输出
-    // curl https://wiki.archlinux.org -d 'search=vim' -v
-    QProcess process;
-
-
-
+    // https://wiki.archlinux.org 'search=vim'
     qDebug()<<"Curl Wiki Started";
 
+    // 利用事件循环
+    QEventLoop eventLoop;
 
+    QNetworkRequest request;
+    request.setUrl(QUrl("https://wiki.archlinux.org"));
+    QByteArray data = tr("search=").arg(m_keyword).toUtf8();
 
-    process.start(tr("curl https://wiki.archlinux.org -d \'search=%1\' -v").arg(_keyword));
+//    // MultiPart
+//    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+//    QHttpPart part;
+//    part.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("text/plain"));
+//    part.setBody(tr("search=%1").arg(_keyword).toUtf8());
+//    multiPart->append(part);
 
-    process.waitForFinished();
+    QNetworkAccessManager manager;
 
-    QByteArray buf = process.readAllStandardOutput();
-    QString ret = buf;
+    QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
+    QNetworkReply *reply = manager.post(request, data);
 
-    qDebug()<<ret;
-
-    // 判断返回是否含有 location
-    if(ret.contains("< location:"))
-    {
-        qDebug()<<"contains";
-        url = ret.mid(ret.indexOf("< location:")+11, ret.indexOf("< x-powered-by:")-ret.indexOf("< location:")-11+1);
-    }
-
+    eventLoop.exec();
     qDebug()<<"Curl Wiki finished";
+
+    QByteArray buf = reply->readAll();
+    qDebug()<<buf;
 
     return url;
 }

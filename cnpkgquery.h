@@ -29,7 +29,7 @@ public:
     explicit CNPkgquery(const QString& pkgname, QObject *parent = nullptr);
     PkgInfo queryPkg();
 private:
-    QString _pkgname;
+    QString m_pkgname;
     QNetworkAccessManager manager;
 signals:
 

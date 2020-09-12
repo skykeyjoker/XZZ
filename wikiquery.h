@@ -3,7 +3,19 @@
 
 #include <QObject>
 
-#include <QProcess>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QHttpMultiPart>
+#include <QHttpPart>
+
+// Json
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
+#include <QJsonParseError>
+
 #include <QEventLoop>
 
 #include <QDebug>
@@ -16,7 +28,7 @@ public:
 
     QString queryWiki();
 private:
-    QString _keyword;
+    QString m_keyword;
 
 signals:
 

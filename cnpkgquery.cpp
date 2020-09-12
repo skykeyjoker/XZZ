@@ -1,7 +1,7 @@
 #include "cnpkgquery.h"
 
 CNPkgquery::CNPkgquery(const QString& pkgname, QObject *parent)
-    : QObject(parent), _pkgname(pkgname)
+    : QObject(parent), m_pkgname(pkgname)
 {
 
 }
@@ -15,7 +15,7 @@ PkgInfo CNPkgquery::queryPkg()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://build.archlinuxcn.org/api/v2/packages/" + _pkgname));
+    request.setUrl(QUrl("https://build.archlinuxcn.org/api/v2/packages/" + m_pkgname));
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));

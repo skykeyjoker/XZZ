@@ -32,7 +32,7 @@ public:
     SetuInfo querySetu();
 
 private:
-    QString _keyword;
+    QString m_keyword;
     const QString APIkey = "587436385f4da24a6182c1";
 
     void downloadPhoto(const QString& url);

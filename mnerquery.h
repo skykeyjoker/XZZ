@@ -29,7 +29,7 @@ public:
     MnerInfo queryMner();
 
 private:
-    QString _mnerName;
+    QString m_mnerName;
 signals:
 
 };

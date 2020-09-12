@@ -1,7 +1,7 @@
 #include "mnerquery.h"
 
 MnerQuery::MnerQuery(const QString& mnerName, QObject *parent)
-    : QObject(parent), _mnerName(mnerName)
+    : QObject(parent), m_mnerName(mnerName)
 {
 
 }
@@ -11,7 +11,7 @@ MnerInfo MnerQuery::queryMner()
 {
     MnerInfo _info;
 
-    if(_mnerName.isEmpty())
+    if(m_mnerName.isEmpty())
         return _info;
 
     // 查询
@@ -19,7 +19,7 @@ MnerInfo MnerQuery::queryMner()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=" + _mnerName));
+    request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=" + m_mnerName));
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
@@ -61,7 +61,7 @@ MnerInfo MnerQuery::queryMner()
         }
 
         // 赋值
-        _info.mnerName = _mnerName;
+        _info.mnerName = m_mnerName;
         _info.count = count;
         _info.packageList = packageList;
     }
