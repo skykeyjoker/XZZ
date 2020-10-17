@@ -7,39 +7,53 @@ WikiQuery::WikiQuery(const QString& keyword, QObject *parent)
 }
 
 // 查询Wiki
-QString WikiQuery::queryWiki()
+WikiResult WikiQuery::queryWiki()
 {
-    QString url;
+    WikiResult result;
 
     // 调用QProcess获取输出
-    // https://wiki.archlinux.org 'search=vim'
-    qDebug()<<"Curl Wiki Started";
+    // https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search=123&namespace=0|3000&limit=10&suggest=true
+    qDebug()<<"Wiki Started";
 
     // 利用事件循环
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://wiki.archlinux.org"));
-    QByteArray data = tr("search=").arg(m_keyword).toUtf8();
-
-//    // MultiPart
-//    QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-//    QHttpPart part;
-//    part.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("text/plain"));
-//    part.setBody(tr("search=%1").arg(_keyword).toUtf8());
-//    multiPart->append(part);
+    request.setUrl(QUrl(tr("https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search=%1&namespace=0|3000&limit=10&suggest=true").arg(m_keyword)));
 
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
-    QNetworkReply *reply = manager.post(request, data);
+    QNetworkReply *reply = manager.get(request);
 
     eventLoop.exec();
-    qDebug()<<"Curl Wiki finished";
+    qDebug()<<"Wiki finished";
 
+    // 获取所有返回
     QByteArray buf = reply->readAll();
-    qDebug()<<buf;
 
-    return url;
+    // 转换为JSON
+    QJsonParseError err;
+    QJsonDocument document = QJsonDocument::fromJson(buf, &err);
+
+    if (err.error != QJsonParseError::NoError) {
+        qDebug()<<"JSON 转换失败";
+    } else {
+        QJsonArray rootArr = document.array(); // 根数组
+        QJsonValue keyword = rootArr.at(0);  // 关键字
+        QJsonArray titles = rootArr.at(1).toArray();  // 第一个返回数组，标题
+        QJsonArray arr2 = rootArr.at(2).toArray();  // 第二个返回数组
+        QJsonArray links = rootArr.at(3).toArray();  // 第三个返回数组，链接
+
+        for (int i = 0; i<titles.size(); ++i) {
+            WikiResult tmpResult(titles.at(i).toString(),links.at(i).toString());
+            results.push_back(tmpResult);
+        }
+    }
+
+    // 若有检索结果，只返回第一个界面
+    if (!results.isEmpty())
+        result = results.at(0);
+    return result;
 }
 

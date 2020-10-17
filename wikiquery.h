@@ -20,15 +20,18 @@
 
 #include <QDebug>
 
+#include "wikiresult.h"
+
 class WikiQuery : public QObject
 {
     Q_OBJECT
 public:
     explicit WikiQuery(const QString& keyword, QObject *parent = nullptr);
 
-    QString queryWiki();
+    WikiResult queryWiki();
 private:
     QString m_keyword;
+    QList<WikiResult> results;
 
 signals:
 

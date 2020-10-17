@@ -34,6 +34,8 @@ add_executable(MiraiDemo
   wikiquery.h
   wikiquery.cpp
   whitelist.h
+  wikiresult.h
+  wikiresult.cpp
 )
 
 target_link_libraries(MiraiDemo Qt5::Core Qt5::Network mirai-cpp pthread)

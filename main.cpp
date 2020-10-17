@@ -10,6 +10,7 @@
 #include "setuquery.h"
 #include "wikiquery.h"
 #include "whitelist.h"
+#include "wikiresult.h"
 
 bool setu = false;
 
@@ -61,9 +62,9 @@ int main(int argc, char *argv[])
                 messageBody.append("pkg  ${pkgName}\n");
                 messageBody.append("off  ${pkgName}\n");
                 messageBody.append("aur  ${pkgName}\n");
-                messageBody.append("cnpkg $ {pkgName}\n");
+                messageBody.append("cnpkg ${pkgName}\n");
                 messageBody.append("mner  ${mnerName}\n");
-                //messageBody.append("wiki  ${keyWord}\n");
+                messageBody.append("wiki  ${keyWord}\n");
                 messageBody.append("enable lsp\n");
                 messageBody.append("disable lsp\n");
                 messageBody.append("lsp\n");
@@ -78,26 +79,57 @@ int main(int argc, char *argv[])
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
-                m.Reply(MessageChain().Plain("小易吃粑粑！"));
+
+                //m.Reply(MessageChain().Plain("小易吃粑粑！"));
+                // Send photo
+                GroupImage img = bot.UploadGroupImage("ping.jpg");
+                m.Reply(MessageChain().Image(img));
+
 
                 return;
             }
 
             // pkg
-            if(qplain.contains("/pkg") || qplain.contains("!pkg"))
+            if(qplain.startsWith("/pkg") || qplain.startsWith("!pkg"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取包名
+                QString pkgname;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "pkg").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        pkgname = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        pkgname = tStr;
+                    }
+
+                } else {
+                    pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果包名为空
+                if (pkgname.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入包名！"));
+
+                    return;
+                }
+
                 // 查询包
-                QString pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  //获取包名
                 qDebug()<<"Pkgname: "<< pkgname;
                 PkgQuery *query = new PkgQuery(pkgname);
                 PkgInfo ret = query->queryPkg();
 
-                if(!ret.pkgname.isEmpty())
+                if (!ret.pkgname.isEmpty())
                 {
-                    if(!ret.isAUR)  // 官方仓库
+                    if (!ret.isAUR)  // 官方仓库
                     {
                         // 生成消息体
                         QString messageBody;
@@ -137,19 +169,47 @@ int main(int argc, char *argv[])
                         // 发送消息
                         m.Reply(MessageChain().Plain(messageBody.toStdString()));
                     }
+                } else {
+                    m.Reply(MessageChain().Plain(QString("未能找到 " + pkgname +" !").toStdString()));
                 }
 
                 return;
             }
 
             // aur
-            if(qplain.contains("/aur") || qplain.contains("!aur"))
+            if(qplain.startsWith("/aur") || qplain.startsWith("!aur"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取包名
+                QString pkgname;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "aur").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        pkgname = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        pkgname = tStr;
+                    }
+
+                } else {
+                    pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果包名为空
+                if (pkgname.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入包名！"));
+
+                    return;
+                }
+
                 // 查询包
-                QString pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  //获取包名
                 qDebug()<<"Pkgname: "<< pkgname;
                 PkgQuery *query = new PkgQuery(pkgname);
                 PkgInfo ret = query->queryPkgInAUR();
@@ -175,19 +235,47 @@ int main(int argc, char *argv[])
 
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
+                } else {
+                    m.Reply(MessageChain().Plain(QString("未能找到 " + pkgname +" !").toStdString()));
                 }
 
                 return;
             }
 
             // off
-            if(qplain.contains("/off") || qplain.contains("!off"))
+            if(qplain.startsWith("/off") || qplain.startsWith("!off"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取包名
+                QString pkgname;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "off").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        pkgname = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        pkgname = tStr;
+                    }
+
+                } else {
+                    pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果包名为空
+                if (pkgname.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入包名！"));
+
+                    return;
+                }
+
                 // 查询包
-                QString pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  //获取包名
                 qDebug()<<"Pkgname: "<< pkgname;
                 PkgQuery *query = new PkgQuery(pkgname);
                 PkgInfo ret = query->queryPkgInOfficial();
@@ -211,19 +299,47 @@ int main(int argc, char *argv[])
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
 
+                } else {
+                    m.Reply(MessageChain().Plain(QString("未能找到 " + pkgname +" !").toStdString()));
                 }
 
                 return;
             }
 
             // mner
-            if(qplain.contains("/mner") || qplain.contains("!mner"))
+            if(qplain.startsWith("/mner") || qplain.startsWith("!mner"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取打包人姓名
+                QString mnerName;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "mner").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        mnerName = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        mnerName = tStr;
+                    }
+
+                } else {
+                    mnerName = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果打包人名称为空
+                if (mnerName.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入打包人姓名！"));
+
+                    return;
+                }
+
                 // 打包人姓名
-                QString mnerName = qplain.section(" ",1,1);
                 qDebug()<<"mner: "<<mnerName;
 
                 MnerQuery *mnerQuery = new MnerQuery(mnerName);
@@ -299,7 +415,7 @@ int main(int argc, char *argv[])
             }
 
             // lsp
-            if(qplain.contains("/lsp") || qplain.contains("!lsp"))
+            if(qplain.startsWith("/lsp") || qplain.startsWith("!lsp"))
             {
                 // 开启色图开关才能获取色图
                 if(setu && WhiteList.contains(m.Sender.Group.GID))
@@ -347,13 +463,39 @@ int main(int argc, char *argv[])
 
 
             // cnpkg
-            if(qplain.contains("/cnpkg") || qplain.contains("!cnpkg"))
+            if(qplain.startsWith("/cnpkg") || qplain.startsWith("!cnpkg"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取包名
+                QString pkgname;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "cnpkg").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        pkgname = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        pkgname = tStr;
+                    }
+
+                } else {
+                    pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果包名为空
+                if (pkgname.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入包名！"));
+
+                    return;
+                }
+
                 // 查询包
-                QString pkgname = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  //获取包名
                 qDebug()<<"Pkgname: "<< pkgname;
                 CNPkgquery *query = new CNPkgquery(pkgname);
                 PkgInfo ret = query->queryPkg();
@@ -370,27 +512,60 @@ int main(int argc, char *argv[])
                     // 发送消息
                     m.Reply(MessageChain().Plain(messageBody.toStdString()));
 
+                } else {
+                    m.Reply(MessageChain().Plain(QString("未能找到 " + pkgname +" !").toStdString()));
                 }
 
                 return;
             }
 
             // Wiki
-            if(qplain.contains("/wiki") || qplain.contains("!wiki"))
+            if(qplain.startsWith("/wiki") || qplain.startsWith("!wiki"))
             {
                 // 这句话不知道是干啥的
                 groups[m.Sender.Group.GID] = true;
 
+                QString prefix = qplain.at(0); // 获取前缀
+                // 获取wiki检索 关键字
+                QString keyword;
+                if (qplain.count(' ') > 1) {
+                    QString tStr = QString::fromStdString(m.MessageChain.GetPlainText());
+                    tStr = tStr.trimmed();  // 去掉两端空格
+                    tStr = tStr.split(prefix + "wiki").at(1); // 去掉头部
+                    tStr = tStr.trimmed(); // 再次去掉两次空格
+                    if (tStr.contains(" ")) {
+                        // 若tStr还有空格，则只取第一个空格前的数据
+                        keyword = tStr.section(" ",0,0);
+                    } else {
+                        // 没有空格，tStr即为包名
+                        keyword = tStr;
+                    }
+
+                } else {
+                    keyword = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);
+                }
+
+                // 如果Wiki检索关键字为空
+                if (keyword.isEmpty()) {
+                    m.Reply(MessageChain().Plain("请输入要检索的Wiki关键字！"));
+
+                    return;
+                }
+
                 // 查询Wiki
-                QString keyword = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);  // 获取关键词
                 qDebug()<<"keyword: "<<keyword;
                 WikiQuery *query = new WikiQuery(keyword);
-                QString ret = query->queryWiki();
+
+                WikiResult ret = query->queryWiki();
 
                 if(!ret.isEmpty())  // 有相关界面
                 {
+                    // 构建消息体
+                    QString messageBody;
+                    messageBody.append(ret.getTitle() + ":\n");
+                    messageBody.append(ret.getUrl());
                     // 发送消息
-                    m.Reply(MessageChain().Plain(ret.toStdString()));
+                    m.Reply(MessageChain().Plain(messageBody.toStdString()));
                 }
                 else  //若没有界面
                 {
