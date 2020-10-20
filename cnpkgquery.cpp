@@ -15,7 +15,13 @@ PkgInfo CNPkgquery::queryPkg()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://build.archlinuxcn.org/api/v2/packages/" + m_pkgname));
+
+    //TODO Url编码
+    QByteArray sUrl = QUrl::toPercentEncoding(m_pkgname.toUtf8());
+    QString url = QString::fromUtf8(QString("https://build.archlinuxcn.org/api/v2/packages/").toUtf8() + sUrl);
+
+    //request.setUrl(QUrl("https://build.archlinuxcn.org/api/v2/packages/" + m_pkgname));
+    request.setUrl(url);
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));

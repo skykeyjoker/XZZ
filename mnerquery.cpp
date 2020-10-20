@@ -19,7 +19,13 @@ MnerInfo MnerQuery::queryMner()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=" + m_mnerName));
+
+    // Url编码
+    QByteArray sUrl = QUrl::toPercentEncoding(m_mnerName.toUtf8());
+    QString url = QString::fromUtf8(QString("https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=").toUtf8() + sUrl);
+
+    //request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&by=maintainer&arg=" + m_mnerName));
+    request.setUrl(url);
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));

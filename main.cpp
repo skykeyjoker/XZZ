@@ -533,6 +533,8 @@ int main(int argc, char *argv[])
                     tStr = tStr.trimmed();  // 去掉两端空格
                     tStr = tStr.split(prefix + "wiki").at(1); // 去掉头部
                     tStr = tStr.trimmed(); // 再次去掉两次空格
+
+                    /*
                     if (tStr.contains(" ")) {
                         // 若tStr还有空格，则只取第一个空格前的数据
                         keyword = tStr.section(" ",0,0);
@@ -540,6 +542,9 @@ int main(int argc, char *argv[])
                         // 没有空格，tStr即为包名
                         keyword = tStr;
                     }
+                    */
+
+                    keyword = tStr.section(" ",0,-1);
 
                 } else {
                     keyword = QString::fromStdString(m.MessageChain.GetPlainText()).section(" ",1,1);

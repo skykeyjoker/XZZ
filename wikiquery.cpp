@@ -19,7 +19,12 @@ WikiResult WikiQuery::queryWiki()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl(tr("https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search=%1&namespace=0|3000&limit=10&suggest=true").arg(m_keyword)));
+
+    // Url编码
+    QByteArray sUrl = QUrl::toPercentEncoding(m_keyword);
+    QString url = QString::fromUtf8(QString("https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search=").toUtf8() + sUrl + QString("&namespace=0|3000&limit=10&suggest=true").toUtf8());
+    //request.setUrl(QUrl(tr("https://wiki.archlinux.org/api.php?action=opensearch&format=json&formatversion=2&search=%1&namespace=0|3000&limit=10&suggest=true").arg(m_keyword)));
+    request.setUrl(url);
 
     QNetworkAccessManager manager;
 
@@ -46,7 +51,10 @@ WikiResult WikiQuery::queryWiki()
         QJsonArray links = rootArr.at(3).toArray();  // 第三个返回数组，链接
 
         for (int i = 0; i<titles.size(); ++i) {
-            WikiResult tmpResult(titles.at(i).toString(),links.at(i).toString());
+            // 将返回的URL解码
+            QString linkRet = QUrl::fromPercentEncoding(links.at(i).toString().toUtf8());
+            //WikiResult tmpResult(titles.at(i).toString(),links.at(i).toString());
+            WikiResult tmpResult(titles.at(i).toString(),linkRet);
             results.push_back(tmpResult);
         }
     }

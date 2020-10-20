@@ -39,7 +39,13 @@ PkgInfo PkgQuery::queryPkgInOfficial()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://www.archlinux.org/packages/search/json/?name=" + m_pkgname));
+
+    // Url编码
+    QByteArray sUrl = QUrl::toPercentEncoding(m_pkgname.toUtf8());
+    QString url = QString::fromUtf8(QString("https://www.archlinux.org/packages/search/json/?name=").toUtf8() + sUrl);
+
+    //request.setUrl(QUrl("https://www.archlinux.org/packages/search/json/?name=" + m_pkgname));
+    request.setUrl(url);
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
@@ -133,8 +139,15 @@ PkgInfo PkgQuery::queryPkgInAUR()
     QEventLoop eventLoop;
 
     QNetworkRequest request;
+
+    // Url编码
+    QByteArray sUrl = QUrl::toPercentEncoding(m_pkgname.toUtf8());
+    QString url = QString::fromUtf8(QString(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=").toUtf8() + sUrl);
+
     //request.setUrl(QUrl("https://aur.archlinux.org/rpc/?v=5&type=search&arg=" + _pkgname));
-    request.setUrl(QUrl(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=" + m_pkgname));  // Tuna反代
+    //request.setUrl(QUrl(aurPrefix_tuna + "/rpc/?v=5&type=search&arg=" + m_pkgname));  // Tuna反代
+    request.setUrl(url);
+
     QNetworkAccessManager manager;
 
     QObject::connect(&manager, SIGNAL(finished(QNetworkReply *)), &eventLoop, SLOT(quit()));
